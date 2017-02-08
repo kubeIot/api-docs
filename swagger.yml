@@ -1,0 +1,664 @@
+swagger: '2.0'
+info:
+  description: The definition of RESTful API for kubelot platform
+  title: The Api of kubelot
+  version: 1.0.0
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - http
+paths:
+  /application:
+    get:
+      tags:
+        - application
+      description: Get all applications
+      responses:
+        '200':
+          description: List of all applications
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/application'
+        '403':
+          description: User is not authorized to list applications
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - application
+      description: Creates new application
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/application'
+      responses:
+        '201':
+          description: Application was created
+          schema:
+            $ref: '#/definitions/application'
+  '/application/{id}':
+    parameters:
+      - type: integer
+        format: int64
+        name: id
+        in: path
+        required: true
+    get:
+      tags:
+        - application
+      description: Get application by ID
+      responses:
+        '200':
+          description: Application information
+          schema:
+            $ref: '#/definitions/application'
+        '404':
+          description: Application was not found
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - application
+      description: Update selected application
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/application'
+      responses:
+        '204':
+          description: Application was updated
+        '404':
+          description: Application was not found
+    delete:
+      tags:
+        - application
+      description: Delete selected application
+      responses:
+        '204':
+          description: Application was Deleted
+        '404':
+          description: Application was not found
+  /capability:
+    get:
+      tags:
+        - capability
+      description: Get the capabilities in Registry
+      responses:
+        '200':
+          description: List of capabilities
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/capability'
+        '403':
+          description: User  is unauthorized
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - capability
+      description: Create new capability in Registry
+      responses:
+        '201':
+          description: capability was created
+          schema:
+            $ref: '#/definitions/capability'
+        '403':
+          description: User is unauthorized to create new capability
+          schema:
+            $ref: '#/definitions/error'
+  '/capability/{id}':
+    parameters:
+      - type: integer
+        format: int64
+        name: id
+        in: path
+        required: true
+    get:
+      tags:
+        - capability
+      description: Get capability information
+      responses:
+        '200':
+          description: capability informations
+          schema:
+            $ref: '#/definitions/capability'
+        '404':
+          description: capability was not found
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - capability
+      description: Updates the capability
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/capability'
+      responses:
+        '204':
+          description: capability was updated
+    delete:
+      tags:
+        - capability
+      description: Deletes the capability
+      responses:
+        '204':
+          description: capability was Deleted
+  /device:
+    get:
+      tags:
+        - device
+      description: Get all devices in database
+      responses:
+        '200':
+          description: List of all devices
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/device'
+        '403':
+          description: User is not authorized to list devices
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - device
+      description: Creates new device
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/device'
+      responses:
+        '201':
+          description: User was created
+          schema:
+            $ref: '#/definitions/device'
+  /device/{id}:
+    parameters:
+      - type: integer
+        format: int64
+        name: id
+        in: path
+        required: true
+    get:
+      tags:
+        - device
+      description: Get device by ID
+      responses:
+        '200':
+          description: Specified device
+          schema:
+            $ref: '#/definitions/device'
+        '404':
+          description: Person was not found
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - device
+      description: Update selected device
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/device'
+      responses:
+        '204':
+          description: Device was updated
+        '404':
+          description: Device was not found
+          schema:
+            $ref: '#/definitions/error'
+    delete:
+      tags:
+        - device
+      description: Delete selected device by ID
+      responses:
+        '204':
+          description: Device was Deleted
+        '404':
+          description: Device was not found
+          schema:
+            $ref: '#/definitions/error'
+  '/device/{id}/events':
+    parameters:
+      - type: integer
+        format: int64
+        name: id
+        in: path
+        required: true
+    get:
+      tags:
+        - device
+      description:
+      responses:
+        '200':
+          description: Events for specified device
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/event'
+        '404':
+          description: Device not found
+          schema:
+            $ref: '#/definitions/error'
+  /device/{id}/capabilities:
+    parameters:
+      - type: integer
+        format: int64
+        name: id
+        in: path
+        required: true
+    get:
+      tags:
+        - device
+      description: Get capabilities of device
+      responses:
+        '200':
+          description: List of all capabilities on device
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/device_capability'
+        '404':
+          description: Device was not found
+          schema:
+            $ref: '#/definitions/error'
+        '403':
+          description: User is not authorized to list device capabilities
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - device
+      description: Creates new capability on device
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/device_capability'
+      responses:
+        '201':
+          description: Capability was added to device
+          schema:
+            $ref: '#/definitions/device_capability'
+        '404':
+          description: Capability was not found
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - device
+      description: Update capability of device
+      parameters:
+        - name: capId
+          in: query
+          type: integer
+          format: int64
+          required: true
+
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/device_capability'
+      responses:
+        '204':
+          description: Device capability was updated
+        '404':
+          description: Device was not found
+          schema:
+            $ref: '#/definitions/error'
+    delete:
+      tags:
+        - device
+      description: Delete device capability
+      parameters:
+         - name: capId
+           in: query
+           type: integer
+           format: int64
+           required: true
+      responses:
+        '204':
+          description: Device capability was Deleted
+        '404':
+          description: Device capability was not found
+          schema:
+            $ref: '#/definitions/error'
+  /image:
+    get:
+      description: Get the images in Registry
+      tags:
+        - image
+      responses:
+        '200':
+          description: List of images
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/image'
+        '403':
+          description: User  is unauthorized
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      description: Create new image in Registry
+      tags:
+        - image
+      responses:
+        '201':
+          description: Image was created
+          schema:
+            $ref: '#/definitions/image'
+        '403':
+          description: User is unauthorized to create new image
+          schema:
+            $ref: '#/definitions/error'
+  '/image/{id}':
+    parameters:
+      - type: integer
+        format: int64
+        name: id
+        in: path
+        required: true
+    get:
+      tags:
+        - image
+      description: Details of image
+      responses:
+        '200':
+          description: Found image
+          schema:
+            $ref: '#/definitions/image'
+        '404':
+          description: Image was not found
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - image
+      description: Updates the image
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/image'
+      responses:
+        '204':
+          description: Image was updated
+    delete:
+      tags:
+        - image
+      description: Deletes the imag
+      responses:
+        '204':
+          description: Image was Deleted
+  /user:
+    get:
+      tags:
+        - user
+      description: Get all users in database
+      responses:
+        '200':
+          description: List of all users
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/user'
+        '403':
+          description: User is not authorized to list users
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      tags:
+        - user
+      description: Creates new user
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/user'
+      responses:
+        '201':
+          description: User was created
+          schema:
+            $ref: '#/definitions/user'
+  '/user/{id}':
+    parameters:
+      - type: integer
+        format: int64
+        name: id
+        in: path
+        required: true
+    get:
+      tags:
+        - user
+      responses:
+        '200':
+          description: User information
+          schema:
+            $ref: '#/definitions/user'
+        '404':
+          description: Person was not found
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - user
+      description: Update person in database
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/user'
+      responses:
+        '204':
+          description: Person was updated
+    delete:
+      tags:
+        - user
+      description: Delete person in database
+      responses:
+        '204':
+          description: Person was Deleted
+
+definitions:
+  device:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+      owner:
+        type: integer
+        description: System id of user owning device
+        format: int64
+      number_of_applications:
+        type: integer
+      applications:
+        type: array
+        items:
+          type: integer
+      installed_capabilities:
+        type: array
+        items:
+          type: integer
+          format: int64
+      used_capabilities:
+        type: array
+        items:
+          type: object
+          properties:
+            capability_id:
+              type: integer
+              format: int64
+            application_id:
+              type: integer
+              format: int64
+      system_info:
+        type: string
+      device_vendor:
+        type: string
+      device_version:
+        type: string
+      kernel_version:
+        type: string
+      os_distribution:
+        type: string
+      address:
+        type: string
+  user:
+    type: object
+    description: User in system
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+      username:
+        type: string
+      email:
+        type: string
+      account_created:
+        type: string
+      last_logged_in:
+        type: string
+      email_verified:
+        type: boolean
+      devices:
+        type: array
+        items:
+          type: integer
+          format: int64
+  application:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+      name:
+        type: string
+      base_image:
+        type: integer
+        format: int64
+      status:
+        type: integer
+      status_message:
+        type: string
+      device_id:
+        type: integer
+        format: int64
+        description: The id of parent device
+      ports:
+        type: array
+        items:
+          type: string
+          description: List of ports exposed by application
+      service_ip:
+        type: string
+        description: Ip of kubernetes service
+      capabilities:
+        type: array
+        description: Used capabilities on the device
+        items:
+          type: integer
+          format: int64
+  event:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+      event_type:
+        type: string
+      event_message:
+        type: string
+      event_timestamp:
+        type: string
+      parent_id:
+        type: integer
+        format: int64
+        description: |
+          Id of owner of event
+  image:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+      name:
+        type: string
+      description:
+        type: string
+      base_image:
+        type: string
+      required_capabilities:
+        type: array
+        items:
+          type: integer
+          format: int64
+      exposed_ports:
+        description: Ports exposed by application
+        type: array
+        items:
+          type: string
+  capability:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+      name:
+        type: string
+      protocol:
+        type: string
+        description: Communication protocol of capability
+      peripherial_device:
+        type: string
+        description: Name of the peripheral device
+  device_capability:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+      cap_id:
+        type: integer
+        format: int64
+        description: Id to capability type
+      bus_connection:
+        type: string
+        description: |
+          The bus on device where the capability is connected
+          Format cannot be currently specified, we don't know yet
+          how the connection to peripheral will look like
+      used:
+        type: boolean
+        description: Is the capability used by application
+      app_id:
+        type: integer
+        format: int64
+  error:
+    type: object
+    required:
+      - message
+    properties:
+      code:
+        type: integer
+        format: int64
+      message:
+        type: string
