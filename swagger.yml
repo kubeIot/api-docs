@@ -2,14 +2,61 @@ swagger: '2.0'
 info:
   description: The definition of RESTful API for kubelot platform
   title: The Api of kubelot
-  version: 1.0.0
+  version: 0.1.0
 consumes:
   - application/json
 produces:
   - application/json
 schemes:
   - http
+securityDefinitions:
+  OAuth2:
+    type: "oauth2"
+    flow: implicit
+    authorizationUrl: "/oauth2/authorization"
+    scopes:
+      user: "Single user"
+security:
+  - OAuth2: [user]
 paths:
+  /oauth2/authorization:
+    post:
+      consumes:
+        - 'application/x-www-form-urlencoded'
+      tags:
+        - oauth2
+      parameters:
+        - name: grant_type
+          type: string
+          in: query
+          enum:
+            - 'refresh_token'
+            - 'password'
+          required: true
+        - name: client_id
+          type: string
+          in: query
+          required: true
+        - name: username
+          type: string
+          in: formData
+        - name: password
+          type: string
+          in: formData
+        - name: refresh_token
+          type: string
+          in: formData
+      security: []
+      description: Authorization endpoint
+      responses:
+        '200':
+          description: User was authorized
+          schema:
+           $ref: '#/definitions/token_response'
+        '401':
+          description: User unauthorized
+          schema:
+            $ref: '#/definitions/error'
   /application:
     get:
       tags:
@@ -95,10 +142,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/capability'
-        '403':
-          description: User  is unauthorized
-          schema:
-            $ref: '#/definitions/error'
     post:
       tags:
         - capability
@@ -108,10 +151,6 @@ paths:
           description: capability was created
           schema:
             $ref: '#/definitions/capability'
-        '403':
-          description: User is unauthorized to create new capability
-          schema:
-            $ref: '#/definitions/error'
   '/capability/{id}':
     parameters:
       - type: integer
@@ -163,7 +202,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/device'
-        '403':
+        '401':
           description: User is not authorized to list devices
           schema:
             $ref: '#/definitions/error'
@@ -238,7 +277,7 @@ paths:
     get:
       tags:
         - device
-      description:
+      description: get events of device
       responses:
         '200':
           description: Events for specified device
@@ -304,7 +343,6 @@ paths:
           type: integer
           format: int64
           required: true
-
         - name: body
           in: body
           schema:
@@ -317,20 +355,24 @@ paths:
           schema:
             $ref: '#/definitions/error'
     delete:
+      parameters:
+        - name: capId
+          in: query
+          type: integer
+          format: int64
+          required: true
       tags:
         - device
       description: Delete device capability
-      parameters:
-         - name: capId
-           in: query
-           type: integer
-           format: int64
-           required: true
       responses:
         '204':
           description: Device capability was Deleted
         '404':
           description: Device capability was not found
+          schema:
+            $ref: '#/definitions/error'
+        '400':
+          description: Capability cannot be deleted
           schema:
             $ref: '#/definitions/error'
   /image:
@@ -349,70 +391,16 @@ paths:
           description: User  is unauthorized
           schema:
             $ref: '#/definitions/error'
-    post:
-      description: Create new image in Registry
-      tags:
-        - image
-      responses:
-        '201':
-          description: Image was created
-          schema:
-            $ref: '#/definitions/image'
-        '403':
-          description: User is unauthorized to create new image
-          schema:
-            $ref: '#/definitions/error'
-  '/image/{id}':
-    parameters:
-      - type: integer
-        format: int64
-        name: id
-        in: path
-        required: true
-    get:
-      tags:
-        - image
-      description: Details of image
-      responses:
-        '200':
-          description: Found image
-          schema:
-            $ref: '#/definitions/image'
-        '404':
-          description: Image was not found
-          schema:
-            $ref: '#/definitions/error'
-    put:
-      tags:
-        - image
-      description: Updates the image
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: '#/definitions/image'
-      responses:
-        '204':
-          description: Image was updated
-    delete:
-      tags:
-        - image
-      description: Deletes the imag
-      responses:
-        '204':
-          description: Image was Deleted
   /user:
     get:
       tags:
         - user
-      description: Get all users in database
+      description: Get information about current user
       responses:
         '200':
           description: List of all users
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/user'
+            $ref: '#/definitions/user'
         '403':
           description: User is not authorized to list users
           schema:
@@ -482,6 +470,12 @@ definitions:
         type: integer
         description: System id of user owning device
         format: int64
+      name:
+        type: string
+        description: Human readeable identifier of device
+      description:
+        type: string
+        description: The description of device
       number_of_applications:
         type: integer
       applications:
@@ -626,7 +620,7 @@ definitions:
       protocol:
         type: string
         description: Communication protocol of capability
-      peripherial_device:
+      peripheral_device:
         type: string
         description: Name of the peripheral device
   device_capability:
@@ -636,6 +630,9 @@ definitions:
         type: integer
         format: int64
         readOnly: true
+      name:
+        type: string
+        description: User defined name of capability
       cap_id:
         type: integer
         format: int64
@@ -652,6 +649,23 @@ definitions:
       app_id:
         type: integer
         format: int64
+  token_response:
+    type: object
+    required:
+      - access_token
+      - token_type
+      - expires_in
+      - refresh_token
+    properties:
+      access_token:
+        type: string
+      token_type:
+        type: string
+      expires_in:
+        type: string
+      refresh_token:
+        type: string
+
   error:
     type: object
     required:
